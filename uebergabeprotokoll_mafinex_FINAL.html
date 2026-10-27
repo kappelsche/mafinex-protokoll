@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rückgabe-Protokoll – MAFINEX Technologiezentrum</title>
+<style media="print">
+  /* Unterdrückt Browser-Kopf-/Fußzeilen soweit möglich */
+  @page { margin: 12mm 10mm; size: A4 portrait; }
+</style>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --black:    #111111;
+    --dark:     #3a3a3a;
+    --mid:      #6b6b6b;
+    --light:    #c8c8c8;
+    --rule:     #e2e2e2;
+    --bg:       #f5f5f5;
+    --white:    #ffffff;
+    --green:    #1a7f4e;
+    --green-bg: #edf6f1;
+    --red:      #c0392b;
+    --red-bg:   #fdf0ee;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--black); font-size: 14px; line-height: 1.55; }
+
+  /* HEADER */
+  header { background: var(--black); }
+  .hdr-inner { max-width: 980px; margin: 0 auto; padding: 26px 24px 22px; display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+  .hdr-left  { display: flex; flex-direction: column; gap: 14px; }
+  .hdr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .hdr-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+  .hdr-title    { font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: #fff; }
+  .hdr-badge    { border: 1px solid rgba(255,255,255,.22); border-radius: 3px; padding: 5px 12px; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  .hdr-addr     { font-size: 10px; color: rgba(255,255,255,.35); text-align: right; line-height: 1.7; }
+  #prog-strip { height: 3px; background: rgba(255,255,255,.1); }
+  #prog-bar   { height: 3px; background: #fff; width: 0%; transition: width .35s ease; }
+
+  /* LAYOUT */
+  .container { max-width: 980px; margin: 0 auto; padding: 26px 20px 80px; }
+
+  /* NOTICE */
+  .notice      { border-left: 3px solid var(--black); background: var(--white); padding: 12px 17px; font-size: 13px; color: var(--dark); margin-bottom: 22px; border-radius: 0 4px 4px 0; }
+  .done-banner { display: none; border-left: 3px solid var(--green); background: var(--green-bg); padding: 12px 17px; font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 22px; border-radius: 0 4px 4px 0; }
+  .done-banner.show { display: block; }
+
+  /* SECTION LABEL */
+  .sec-label { display: flex; align-items: center; gap: 10px; margin: 26px 0 10px; padding-bottom: 9px; border-bottom: 1.5px solid var(--black); }
+  .sec-num  { font-size: 10px; font-weight: 700; letter-spacing: .14em; color: var(--mid); min-width: 22px; }
+  .sec-label h2 { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--black); }
+  .sec-ico  { margin-left: auto; font-size: 15px; }
+
+  /* CARD */
+  .card      { background: var(--white); border: 1px solid var(--rule); border-radius: 6px; margin-bottom: 6px; overflow: hidden; }
+  .card-body { padding: 18px 20px 20px; }
+
+  /* META FIELDS */
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 13px; }
+  .field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--mid); margin-bottom: 4px; }
+  .field input, .field select, .field textarea {
+    width: 100%; border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px;
+    font-size: 13.5px; font-family: 'Inter', sans-serif; color: var(--black);
+    background: var(--white); outline: none; transition: border-color .15s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--black); }
+
+  /* SCROLL */
+  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* ── CHECKLIST TABLE (rooms as columns, with editable headers) ── */
+  .check-table { border-collapse: collapse; }
+  .check-table thead tr.room-header-row { background: var(--bg); }
+
+  /* Fixed label columns */
+  .check-table th.th-nr    { width: 28px; text-align: left; padding: 8px 4px; }
+  .check-table th.th-label { min-width: 200px; text-align: left; padding: 8px 8px; }
+  .check-table th.th-room  { min-width: 110px; padding: 4px 4px 0; vertical-align: top; }
+  .check-table th.th-add   { width: 42px; padding: 4px; vertical-align: middle; }
+
+  .col-meta { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--mid); }
+
+  /* Room name input inside TH */
+  .room-th-inner { display: flex; flex-direction: column; align-items: center; gap: 3px; padding-bottom: 6px; border-bottom: 1.5px solid var(--rule); }
+  .room-name-inp {
+    width: 100%; border: 1px solid transparent; border-radius: 3px;
+    padding: 4px 6px; font-size: 11px; font-weight: 700; font-family: 'Inter', sans-serif;
+    color: var(--black); text-align: center; background: transparent; outline: none;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .room-name-inp:focus  { border-color: var(--black); background: var(--white); }
+  .room-name-inp:hover  { border-color: var(--rule); }
+  .room-del-col {
+    background: none; border: none; cursor: pointer; color: var(--light);
+    font-size: 14px; line-height: 1; padding: 1px 3px; transition: color .12s;
+  }
+  .room-del-col:hover { color: var(--red); }
+
+  /* Add-column button */
+  .add-col-btn {
+    background: none; border: 1.5px dashed var(--rule); border-radius: 4px;
+    cursor: pointer; color: var(--mid); font-size: 16px; font-weight: 700;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    transition: all .15s; font-family: 'Inter', sans-serif;
+  }
+  .add-col-btn:hover { border-color: var(--black); color: var(--black); }
+
+  /* Body rows */
+  .check-table tbody tr  { border-bottom: 1px solid var(--rule); }
+  .check-table tbody tr:hover { background: var(--bg); }
+  .check-table tbody tr:last-child { border-bottom: none; }
+  .check-table td        { padding: 6px 6px; vertical-align: middle; }
+  .check-table td.td-nr  { color: var(--light); font-size: 10px; font-weight: 700; }
+  .check-table td.td-lbl { font-size: 13px; font-weight: 500; padding: 6px 8px; }
+  .check-table td.td-val { text-align: center; }
+
+  /* STATUS BUTTONS */
+  .sg  { display: flex; gap: 2px; justify-content: center; }
+  .sb  {
+    border: 1px solid var(--rule); border-radius: 3px; background: var(--white);
+    color: var(--mid); font-size: 11px; font-weight: 700; padding: 4px 7px;
+    cursor: pointer; transition: all .12s; font-family: 'Inter', sans-serif;
+  }
+  .sb:hover        { border-color: var(--black); color: var(--black); }
+  .sb.ok           { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .sb.nok          { background: var(--red-bg);   border-color: var(--red);   color: var(--red); }
+  .sb.na           { background: var(--bg); border-color: var(--light); color: var(--mid); }
+
+  /* DEFECT */
+  .defect-ta { width: 100%; border: 1px solid var(--rule); border-radius: 4px; padding: 10px 12px; font-size: 13px; font-family: 'Inter', sans-serif; resize: vertical; min-height: 70px; outline: none; }
+  .defect-ta:focus { border-color: var(--black); }
+
+  /* DYNAMIC ROWS (HKV / Strom / Schlüssel) */
+  .add-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+    padding: 8px 15px; border: 1.5px dashed var(--rule); border-radius: 4px;
+    background: none; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+    color: var(--mid); cursor: pointer; letter-spacing: .04em; transition: all .15s;
+  }
+  .add-btn:hover { border-color: var(--black); color: var(--black); }
+
+  .dyn-table { width: 100%; border-collapse: collapse; }
+  .dyn-table th {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--mid); padding: 8px 10px; border-bottom: 1.5px solid var(--rule);
+    text-align: left; background: var(--bg); white-space: nowrap;
+  }
+  .dyn-table td { padding: 6px 6px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+  .dyn-table tbody tr:last-child td { border-bottom: none; }
+  .dyn-table input { width: 100%; border: 1px solid var(--rule); border-radius: 4px; padding: 6px 8px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; min-width: 70px; background: var(--white); }
+  .dyn-table input:focus { border-color: var(--black); }
+  .del-row { background: none; border: none; cursor: pointer; color: var(--light); font-size: 16px; padding: 2px 4px; transition: color .12s; }
+  .del-row:hover { color: var(--red); }
+  .ok-pill { font-size: 11px; font-weight: 700; color: var(--green); white-space: nowrap; }
+
+  /* HKV Befestigung Toggle */
+  .bef-btn {
+    border: 1px solid var(--rule); border-radius: 3px; background: var(--white);
+    color: var(--mid); font-size: 11px; font-weight: 700; padding: 5px 10px;
+    cursor: pointer; transition: all .12s; font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  .bef-btn.is-ok   { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .bef-btn.is-lose { background: var(--red-bg);   border-color: var(--red);   color: var(--red); }
+  .empty-row td { padding: 14px 10px; color: var(--mid); font-size: 13px; font-style: italic; }
+
+  /* CHECKBOX */
+  .chk-wrap { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .chk-wrap input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
+
+  /* SIGNATURES */
+  .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .sig-grid { grid-template-columns: 1fr; } }
+  .sig-box { border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+  .sig-top { display: flex; justify-content: space-between; align-items: center; padding: 8px 13px; background: var(--bg); border-bottom: 1px solid var(--rule); }
+  .sig-top-lbl { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--mid); }
+  .sig-clr { background: none; border: none; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--dark); }
+  .sig-canvas { display: block; width: 100%; height: 140px; background: var(--white); touch-action: none; cursor: crosshair; }
+  .sig-name-row { padding: 7px 13px; font-size: 11px; color: var(--mid); border-top: 1px solid var(--rule); }
+
+  /* ACTIONS */
+  .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 11px 20px; border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1.5px solid transparent; font-family: 'Inter', sans-serif; letter-spacing: .03em; transition: all .15s; }
+  .btn-primary { background: var(--black); color: #fff; border-color: var(--black); }
+  .btn-primary:hover { background: var(--dark); border-color: var(--dark); }
+  .btn-outline { background: var(--white); color: var(--black); border-color: var(--black); }
+  .btn-outline:hover { background: var(--bg); }
+  .btn-ghost { background: var(--white); color: var(--mid); border-color: var(--rule); }
+  .btn-ghost:hover { border-color: var(--dark); color: var(--dark); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 8px; padding: 28px; width: min(460px, 90vw); box-shadow: 0 16px 56px rgba(0,0,0,.22); }
+  .modal h3 { font-size: 16px; font-weight: 800; letter-spacing: -.01em; margin-bottom: 16px; }
+  .modal .field { margin-bottom: 12px; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* iPad-Hinweis */
+  .ipad-hint { border-left: 3px solid #e67e22; background: #fef9f0; padding: 12px 17px; font-size: 13px; color: #7d4800; margin-top: 14px; border-radius: 0 4px 4px 0; line-height: 1.6; }
+
+  /* FOOTER */
+  .doc-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .doc-footer span { font-size: 11px; color: var(--light); }
+
+  /* PRINT */
+  @media print {
+    @page {
+      margin: 14mm 12mm 12mm 12mm;
+      size: A4 portrait;
+    }
+
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body {
+      background: #fff !important;
+      font-size: 9px !important;
+      line-height: 1.35 !important;
+      color: #111 !important;
+    }
+
+    /* ── Alles ausblenden was nicht ins PDF soll ── */
+    .action-bar, #prog-strip, #prog-bar,
+    .notice, .done-banner,
+    .modal-overlay,
+    .add-btn, .del-row, .add-col-btn, .room-del-col,
+    .sig-clr,
+    .sec-ico,
+    .check-hint { display: none !important; }
+
+    /* ── Layout ── */
+    .container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+
+    /* ── Header: kompakt aber erkennbar ── */
+    header { background: #111 !important; padding: 0 !important; }
+    .hdr-inner { padding: 8px 12px !important; gap: 10px !important; }
+    .hdr-left  { gap: 6px !important; }
+    .hdr-title { font-size: 15px !important; letter-spacing: -.01em !important; }
+    .hdr-eyebrow { font-size: 7px !important; }
+    .hdr-badge { font-size: 7px !important; padding: 2px 7px !important; }
+    .hdr-addr  { font-size: 7px !important; line-height: 1.5 !important; }
+
+    /* ── Section labels: nie allein am Seitenende ── */
+    .sec-label {
+      margin: 8px 0 4px !important;
+      padding-bottom: 4px !important;
+      page-break-after: avoid !important;
+      border-bottom: 1px solid #111 !important;
+    }
+    .sec-label h2 { font-size: 8px !important; letter-spacing: .08em !important; }
+    .sec-num { font-size: 7px !important; }
+
+    /* ── Cards: kein Schatten, flach, dicht ── */
+    .card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+      border-radius: 0 !important;
+      margin-bottom: 5px !important;
+      page-break-inside: auto !important;
+      overflow: visible !important;
+    }
+    .card-body { padding: 6px 8px !important; }
+
+    /* ── Allgemeine Angaben: alle 5 Felder in einer Zeile ── */
+    .meta-grid {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      gap: 0 !important;
+    }
+    .meta-grid .field {
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      padding-right: 10px !important;
+      border-right: 1px solid #eee !important;
+      margin-right: 10px !important;
+    }
+    .meta-grid .field:last-child { border-right: none !important; padding-right: 0 !important; margin-right: 0 !important; }
+    .field label { font-size: 7px !important; margin-bottom: 1px !important; letter-spacing: .1em !important; }
+    .field input, .field select {
+      font-size: 9.5px !important;
+      padding: 2px 0 !important;
+      border: none !important;
+      border-bottom: 1px solid #ccc !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      width: 100% !important;
+    }
+
+    /* ── Scroll-Wrapper: kein Overflow ── */
+    .scroll-x { overflow: visible !important; width: 100% !important; }
+
+    /* ── Checkliste ── */
+    .check-table {
+      width: 100% !important;
+      table-layout: fixed !important;
+      font-size: 7.5px !important;
+      border-collapse: collapse !important;
+    }
+    .check-table th {
+      font-size: 7px !important;
+      padding: 3px 3px !important;
+      word-break: break-word !important;
+      white-space: normal !important;
+      background: #f5f5f5 !important;
+    }
+    .check-table td { padding: 2px 3px !important; font-size: 7.5px !important; }
+    .check-table td.td-lbl { font-size: 7.5px !important; min-width: 0 !important; }
+    .check-table td.td-nr  { font-size: 7px !important; color: #aaa !important; }
+    .check-table th.th-label { width: 32% !important; }
+    .check-table th.th-nr    { width: 16px !important; }
+    .check-table th.th-add   { display: none !important; }
+    .check-table th.th-room  { min-width: 0 !important; }
+
+    /* Status-Buttons im Print: nur aktiven zeigen, als kompaktes Label */
+    .sg { gap: 0 !important; justify-content: center !important; }
+    .sb { display: none !important; }
+    .sb.ok  { display: inline-block !important; font-size: 7px !important; padding: 1px 4px !important; border-radius: 2px !important; font-weight: 700 !important; }
+    .sb.nok { display: inline-block !important; font-size: 7px !important; padding: 1px 4px !important; border-radius: 2px !important; font-weight: 700 !important; }
+    .sb.na  { display: inline-block !important; font-size: 7px !important; padding: 1px 4px !important; border-radius: 2px !important; font-weight: 700 !important; }
+
+    /* Raumname-Input im Tabellenkopf */
+    .room-name-inp {
+      font-size: 7px !important;
+      font-weight: 700 !important;
+      border: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+      width: 100% !important;
+      text-align: center !important;
+      letter-spacing: .06em !important;
+    }
+    .room-th-inner { padding-bottom: 2px !important; gap: 0 !important; }
+
+    /* ── Dynamische Tabellen (HKV / Strom / Schlüssel) ── */
+    .dyn-table { font-size: 8.5px !important; width: 100% !important; }
+    .dyn-table th {
+      font-size: 7px !important;
+      padding: 3px 5px !important;
+      background: #f5f5f5 !important;
+      white-space: nowrap !important;
+    }
+    .dyn-table td { padding: 3px 5px !important; font-size: 8.5px !important; }
+    .dyn-table tbody tr { page-break-inside: avoid !important; }
+    .dyn-table input {
+      font-size: 8.5px !important;
+      padding: 1px 0 !important;
+      border: none !important;
+      border-bottom: 1px solid #ddd !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+    .bef-btn { font-size: 7.5px !important; padding: 1px 5px !important; border-radius: 2px !important; }
+
+    /* bef-btn im Print: nur aktiven Status zeigen */
+    .bef-btn { font-size: 7.5px !important; padding: 1px 6px !important; border-radius: 2px !important; font-weight: 700 !important; }
+    /* Inaktive Schlüssel-Buttons ausblenden: weder is-ok noch is-lose = leer */
+    .bef-btn:not(.is-ok):not(.is-lose) { opacity: 0.25 !important; font-size: 7px !important; padding: 1px 4px !important; }
+
+    /* Datum-Input: Kalender-Icon im Print ausblenden (appearance:none NICHT verwenden - Safari zeigt sonst keinen Wert beim Drucken!) */
+    input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
+    /* Platzhalter-Text (tt.mm.jjjj) bei LEEREN Datumsfeldern im Druck ausblenden */
+    input[type="date"].print-empty::-webkit-datetime-edit { color: transparent !important; }
+
+    /* ── Defekt-Textarea ── */
+    .defect-ta {
+      font-size: 8.5px !important;
+      min-height: 28px !important;
+      max-height: 60px !important;
+      border: 1px solid #ddd !important;
+      resize: none !important;
+      padding: 4px 6px !important;
+    }
+
+    /* ── Unterschriften: nebeneinander, kompakt ── */
+    .sig-grid { gap: 8px !important; }
+    .sig-box { page-break-inside: avoid !important; }
+    .sig-top { padding: 4px 10px !important; }
+    .sig-top-lbl { font-size: 7px !important; }
+    .sig-canvas { height: 80px !important; border: 1px solid #ddd !important; }
+    .sig-name-row { font-size: 8px !important; padding: 3px 10px !important; }
+    .sig-name-row input { font-size: 8px !important; border: none !important; border-bottom: 1px solid #ccc !important; background: transparent !important; }
+
+    /* ── Footer ── */
+    .doc-footer { margin-top: 8px !important; padding-top: 5px !important; }
+    .doc-footer span { font-size: 7px !important; }
+
+    /* ── Seitenumbruch VOR Abschnitt 03 HKV ── */
+    .sec-page-break { page-break-before: always !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr-inner">
+    <div class="hdr-left">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 50" height="34">
+        <circle fill="#fff" cx="8" cy="26" r="5.5"/>
+        <line x1="15" y1="26" x2="33" y2="26" stroke="#fff" stroke-width="1.5"/>
+        <circle cx="51" cy="26" r="18" stroke="#fff" stroke-width="2" fill="none"/>
+        <line x1="69" y1="26" x2="82" y2="26" stroke="#fff" stroke-width="1.5"/>
+        <text x="88" y="20" fill="#fff" font-family="Inter,sans-serif" font-weight="800" font-size="16" letter-spacing="1">MAFINEX</text>
+        <text x="88" y="37" fill="#fff" font-family="Inter,sans-serif" font-weight="400" font-size="10.5" letter-spacing="3.2">NEXT MANNHEIM</text>
+      </svg>
+      <div>
+        <div class="hdr-eyebrow">Dokument</div>
+        <div class="hdr-title" id="hdrDocTitle">Rückgabe-Protokoll</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-badge">Digital · iPad-ready</div>
+      <div class="hdr-addr">Julius-Hatry-Straße 1 · 68163 Mannheim<br>mafinex@next-mannheim.de</div>
+    </div>
+  </div>
+  <div id="prog-strip"><div id="prog-bar"></div></div>
+</header>
+
+<div class="container">
+
+  <div class="notice">
+    <strong>Flexibles Protokoll</strong> — Räume direkt in der Checkliste hinzufügen oder entfernen (＋ Spalte / ×). Zähler und Schlüssel ebenfalls frei erweiterbar. Auf dem iPad im Safari-Browser ausfüllen, unterschreiben und als PDF speichern.
+  </div>
+  <div class="done-banner" id="doneBanner">✓ Protokoll vollständig – bereit zur Unterschrift und Abschluss.</div>
+
+  <!-- 01 STAMMDATEN -->
+  <div class="sec-label"><span class="sec-num">01</span><h2>Allgemeine Angaben</h2><span class="sec-ico">🏢</span></div>
+  <div class="card"><div class="card-body">
+    <div class="meta-grid">
+      <div class="field">
+        <label>Protokolltyp</label>
+        <select id="protokolltyp" onchange="updateTitle()">
+          <option value="Rückgabe-Protokoll" selected>Rückgabe-Protokoll</option>
+          <option value="Übergabe-Protokoll">Übergabe-Protokoll</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Datum</label>
+        <input type="date" id="datum" />
+      </div>
+      <div class="field">
+        <label>Mieter / Unternehmen</label>
+        <input type="text" id="mieter" placeholder="Firmenname" />
+      </div>
+      <div class="field">
+        <label>Vertreter Mieter</label>
+        <input type="text" id="mieterVertr" placeholder="Name" />
+      </div>
+      <div class="field">
+        <label>Vertreter Vermieter</label>
+        <input type="text" id="vermieterVertr" value="Alexander Kappel" />
+      </div>
+    </div>
+  </div></div>
+
+  <!-- 02 CHECKLISTE MIT RÄUMEN -->
+  <div class="sec-label"><span class="sec-num">02</span><h2>Grundreinigung &amp; Schönheitsreparaturen</h2><span class="sec-ico">✔</span></div>
+  <div class="card"><div class="card-body">
+    <p class="check-hint" style="font-size:12px;color:var(--mid);margin-bottom:12px;">
+      Raumnamen direkt in den Spaltenköpfen eingeben. Mit <strong>＋</strong> neue Raumspalte hinzufügen, mit <strong>×</strong> entfernen — bestehende Häkchen bleiben erhalten.
+    </p>
+    <div class="scroll-x">
+      <table class="check-table" id="checkTable">
+        <thead>
+          <tr class="room-header-row" id="roomHeaderRow">
+            <th class="th-nr col-meta">#</th>
+            <th class="th-label col-meta">Prüfpunkt</th>
+            <!-- room columns injected by JS -->
+            <th class="th-add">
+              <button class="add-col-btn" onclick="addRoom()" title="Raum hinzufügen">＋</button>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="checkBody"></tbody>
+      </table>
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label>Defekte &amp; Anmerkungen</label>
+      <textarea class="defect-ta" id="defekte" placeholder="Defekte, Mängel oder besondere Hinweise …"></textarea>
+    </div>
+  </div></div>
+
+  <!-- 03 HKV -->
+  <div class="sec-label sec-page-break"><span class="sec-num">03</span><h2>Heizkosten-Verteiler (HKV)</h2><span class="sec-ico">🌡</span></div>
+  <div class="card"><div class="card-body">
+    <div class="scroll-x">
+      <table class="dyn-table">
+        <thead><tr><th>#</th><th>Raum</th><th>HKV-Nr.</th><th>Stand</th><th>Befestigung</th><th>Ablesedatum</th><th>Anmerkung</th><th></th></tr></thead>
+        <tbody id="hkvBody"></tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="addHKV()">＋ HKV-Zeile hinzufügen</button>
+  </div></div>
+
+  <!-- 04 STROM -->
+  <div class="sec-label"><span class="sec-num">04</span><h2>Stromzähler</h2><span class="sec-ico">⚡</span></div>
+  <div class="card"><div class="card-body">
+    <div class="scroll-x">
+      <table class="dyn-table">
+        <thead><tr><th>#</th><th>Raum</th><th>Zähler-Nr.</th><th>Stand (kWh)</th><th>Ablesedatum</th><th>Anmerkung</th><th></th></tr></thead>
+        <tbody id="stromBody"></tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="addStrom()">＋ Stromzähler hinzufügen</button>
+  </div></div>
+
+  <!-- 05 SCHLÜSSEL -->
+  <div class="sec-label"><span class="sec-num">05</span><h2 id="keySecTitle">Schlüssel-Rückgabe</h2><span class="sec-ico">🔑</span></div>
+  <div class="card"><div class="card-body">
+    <div class="scroll-x">
+      <table class="dyn-table">
+        <thead><tr><th>#</th><th>Schlüssel-Nr.</th><th>Verwendungszweck</th><th>Mitarbeiter</th><th>Ausgabe</th><th>Datum</th><th>Zurück</th><th>Verlust</th><th></th></tr></thead>
+        <tbody id="keyBody"></tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="addKey()">＋ Schlüssel hinzufügen</button>
+  </div></div>
+
+  <!-- 06 SCHLIESS­ZYLINDER -->
+  <div class="sec-label"><span class="sec-num">06</span><h2>Schließzylinder</h2><span class="sec-ico">🔒</span></div>
+  <div class="card"><div class="card-body">
+    <div class="scroll-x">
+      <table class="dyn-table">
+        <thead><tr><th>#</th><th>Raum / Tür</th><th>Zylinder-Nr.</th><th>Typ / Hersteller</th><th>Anzahl Schlüssel</th><th>Zustand</th><th>Anmerkung</th><th></th></tr></thead>
+        <tbody id="zylinderBody"></tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="addZylinder()">＋ Zylinder hinzufügen</button>
+  </div></div>
+
+  <!-- 07 UNTERSCHRIFTEN -->
+  <div class="sec-label"><span class="sec-num">07</span><h2>Unterschriften</h2><span class="sec-ico">✍</span></div>
+  <div class="card"><div class="card-body">
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="sig-top">
+          <span class="sig-top-lbl">Mieter / Vertreter</span>
+          <button class="sig-clr" onclick="clearSig('sigMieter')">Löschen</button>
+        </div>
+        <canvas id="sigMieter" class="sig-canvas"></canvas>
+        <div class="sig-name-row">
+          <input type="text" id="sigMieterName" placeholder="Name in Klarschrift eingeben …"
+            style="width:100%;border:none;outline:none;font-size:11px;color:var(--mid);font-family:'Inter',sans-serif;background:transparent;" />
+        </div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-top">
+          <span class="sig-top-lbl">Vermieter · NEXT MANNHEIM</span>
+          <button class="sig-clr" onclick="clearSig('sigVermieter')">Löschen</button>
+        </div>
+        <canvas id="sigVermieter" class="sig-canvas"></canvas>
+        <div class="sig-name-row">Alexander Kappel · MAFINEX Technologiezentrum</div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--mid);margin-top:11px;line-height:1.65;">
+      Beide Parteien bestätigen mit ihrer Unterschrift die Vollständigkeit und Richtigkeit dieses Protokolls.
+    </p>
+  </div></div>
+
+  <!-- ACTIONS -->
+  <div class="action-bar">
+    <button class="btn btn-primary" onclick="savePDF()">📄 Als PDF speichern</button>
+    <button class="btn btn-outline" onclick="openEmailModal()">✉ Per E-Mail versenden</button>
+    <button class="btn btn-ghost"   onclick="resetForm()">↺ Zurücksetzen</button>
+  </div>
+
+  <!-- iPad-Hinweis: nur sichtbar wenn nicht in Safari geöffnet -->
+  <div id="ipadHint" class="ipad-hint" style="display:none;">
+    <strong>📱 iPad-Hinweis:</strong> Für die volle Funktionalität (Unterschrift, PDF, Buttons) bitte die Datei direkt in <strong>Safari</strong> öffnen — nicht in einer App-Vorschau.
+  </div>
+
+  <div class="doc-footer">
+    <span>© mg: mannheimer gründungszentren gmbh</span>
+    <span>mafinex.next-mannheim.de</span>
+  </div>
+</div>
+
+<!-- EMAIL MODAL -->
+<div class="modal-overlay" id="emailModal">
+  <div class="modal">
+    <h3>Per E-Mail versenden</h3>
+    <div class="notice" style="margin-bottom:16px;font-size:12px;">
+      💡 <strong>Ablauf:</strong> Klick auf den Button öffnet zuerst den <strong>PDF-Druckdialog</strong>. Dort bitte unter „Weitere Einstellungen" → <strong>Kopf- und Fußzeilen deaktivieren</strong>, dann „Als PDF sichern" wählen. Danach öffnet sich automatisch dein <strong>E-Mail-Programm</strong> – das gespeicherte PDF einfach anhängen.
+    </div>
+    <div class="field"><label>Empfänger</label><input type="email" id="emailTo" placeholder="mieter@beispiel.de" /></div>
+    <div class="field"><label>CC</label><input type="email" id="emailCC" value="kappel@next-mannheim.de" /></div>
+    <div class="field"><label>Betreff</label><input type="text" id="emailSubject" /></div>
+    <div class="field">
+      <label>Nachricht</label>
+      <textarea class="defect-ta" id="emailBody" style="min-height:110px;">Sehr geehrte Damen und Herren,
+
+anbei erhalten Sie das ausgefüllte Protokoll für die oben genannten Räumlichkeiten im MAFINEX Technologiezentrum.
+
+Mit freundlichen Grüßen
+Alexander Kappel
+MAFINEX Technologiezentrum · NEXT MANNHEIM
+Julius-Hatry-Straße 1 · 68163 Mannheim
+kappel@next-mannheim.de</textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEmailModal()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="sendEmail()">📄 PDF speichern &amp; E-Mail öffnen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   PRÜFPUNKTE (Zeilen der Checkliste – fix)
+═══════════════════════════════════════════════════════════ */
+const CHECK_ITEMS = [
+  'Leergeräumt?',
+  'Wände gestrichen?',
+  'Decke gestrichen?',
+  'Teppich- / PVC-Boden gereinigt?',
+  'Fensterscheiben gereinigt?',
+  'Fenster funktionsfähig?',
+  'Schutzglas innen gereinigt?',
+  'Jalousien funktionsfähig?',
+  'Jalousien gereinigt?',
+  'Fensterbretter außen gereinigt?',
+  'Sicherheitsstangen gereinigt?',
+  'Fensterbänke innen gereinigt?',
+  'Heizkörper gereinigt?',
+  'Türrahmen gereinigt?',
+  'Türblätter gereinigt?',
+  'Deckenleuchten gereinigt?',
+  'Leuchtmittel in Ordnung?',
+  'Zwischenwand entfernt?',
+  'Rückbau IT & TK (Technikräume)?',
+];
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
+let nextId    = 1;
+const uid     = () => nextId++;
+
+// rooms: [{id, name}]
+// checks: { roomId: ['ok'|'nok'|'na', ...] }   one entry per CHECK_ITEM
+let rooms  = [];
+let checks = {};
+
+// Simple row arrays
+let hkvRows      = [];  // {id, raum, nr, stand, befestigung, ablesung, anm}
+let stromRows    = [];  // {id, raum, nr, stand, ablesung, anm}
+let keyRows      = [];  // {id, nr, zweck, ma, ausgabe, rueckgabe, status}
+let zylinderRows = [];  // {id, raum, nr, typ, anzahl, zustand, anm}
+
+/* ═══════════════════════════════════════════════════════════
+   ROOMS & CHECK TABLE
+   Key design: we NEVER rebuild the whole table on name edits.
+   Name edits only update the <input> value in-place.
+   We only rebuild header + body when rooms are added/removed.
+═══════════════════════════════════════════════════════════ */
+
+function addRoom() {
+  const id = uid();
+  rooms.push({ id, name: '' });
+  checks[id] = CHECK_ITEMS.map(() => 'ok');   // default all OK
+  rebuildCheckTable();
+  updateProgress();
+  // focus the new room name input
+  requestAnimationFrame(() => {
+    const inp = document.getElementById('rname_' + id);
+    if (inp) inp.focus();
+  });
+}
+
+function removeRoom(id) {
+  if (rooms.length <= 1) {
+    alert('Mindestens ein Raum muss vorhanden sein.');
+    return;
+  }
+  rooms = rooms.filter(r => r.id !== id);
+  delete checks[id];
+  rebuildCheckTable();
+  updateProgress();
+}
+
+// Called live while typing room name – only patches the visible header text,
+// no full rebuild, so status buttons keep their state.
+function onRoomNameInput(id, val) {
+  const room = rooms.find(r => r.id === id);
+  if (room) room.name = val;
+  // also update any <th> that might need refreshing (none needed – input IS the header)
+}
+
+function setCheck(roomId, ci, val) {
+  checks[roomId][ci] = val;
+  // Patch just the three buttons for this cell — no full rebuild
+  const cell = document.getElementById(`cell_${roomId}_${ci}`);
+  if (!cell) return;
+  cell.querySelectorAll('.sb').forEach(btn => btn.className = 'sb');
+  const map = { ok: 0, nok: 1, na: 2 };
+  cell.querySelectorAll('.sb')[map[val]].classList.add(val);
+  updateProgress();
+}
+
+function rebuildCheckTable() {
+  /* ── HEADER ── */
+  const headerRow = document.getElementById('roomHeaderRow');
+  // Remove all room-th columns (keep first two fixed and last add-button)
+  headerRow.querySelectorAll('.th-room').forEach(el => el.remove());
+  // Insert before the add-button TH
+  const addTh = headerRow.querySelector('.th-add');
+  rooms.forEach(r => {
+    const th = document.createElement('th');
+    th.className = 'th-room';
+    th.innerHTML = `
+      <div class="room-th-inner">
+        <input class="room-name-inp" id="rname_${r.id}"
+          type="text" value="${esc(r.name)}"
+          placeholder="Raumname"
+          oninput="onRoomNameInput(${r.id}, this.value)" />
+        <button class="room-del-col" onclick="removeRoom(${r.id})" title="Raum entfernen">×</button>
+      </div>`;
+    headerRow.insertBefore(th, addTh);
+  });
+
+  /* ── BODY ── */
+  const tbody = document.getElementById('checkBody');
+  tbody.innerHTML = CHECK_ITEMS.map((label, ci) => {
+    const cells = rooms.map(r => {
+      const v = checks[r.id]?.[ci] ?? 'ok';
+      return `<td class="td-val" id="cell_${r.id}_${ci}">
+        <div class="sg">
+          <button class="sb ${v==='ok'?'ok':''}"  onclick="setCheck(${r.id},${ci},'ok')">OK</button>
+          <button class="sb ${v==='nok'?'nok':''}" onclick="setCheck(${r.id},${ci},'nok')">!</button>
+          <button class="sb ${v==='na'?'na':''}"  onclick="setCheck(${r.id},${ci},'na')">–</button>
+        </div>
+      </td>`;
+    }).join('');
+    return `<tr>
+      <td class="td-nr">${ci + 1}.</td>
+      <td class="td-lbl">${label}</td>
+      ${cells}
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HKV
+═══════════════════════════════════════════════════════════ */
+function addHKV() {
+  hkvRows.push({ id: uid(), raum:'', nr:'', stand:'', befestigung:'ok', ablesung:'', anm:'' });
+  renderHKV();
+}
+function removeHKV(id) { hkvRows = hkvRows.filter(r => r.id !== id); renderHKV(); }
+function toggleBef(i) {
+  hkvRows[i].befestigung = hkvRows[i].befestigung === 'ok' ? 'lose' : 'ok';
+  renderHKV();
+}
+function renderHKV() {
+  const tbody = document.getElementById('hkvBody');
+  if (!hkvRows.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Noch keine Einträge – über die Schaltfläche unten hinzufügen.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = hkvRows.map((d, i) => {
+    const befOk = d.befestigung !== 'lose';
+    return `
+    <tr>
+      <td style="color:var(--light);font-size:11px;font-weight:700;">${i+1}.</td>
+      <td><input type="text"   value="${esc(d.raum)}"    placeholder="Raum"         onchange="hkvRows[${i}].raum=this.value" /></td>
+      <td><input type="text"   value="${esc(d.nr)}"      placeholder="z. B. 9523"  style="font-family:monospace" onchange="hkvRows[${i}].nr=this.value" /></td>
+      <td><input type="number" value="${esc(d.stand)}"   placeholder="0"            onchange="hkvRows[${i}].stand=this.value" /></td>
+      <td style="text-align:center;">
+        <button class="bef-btn ${befOk ? 'is-ok' : 'is-lose'}" onclick="toggleBef(${i})" title="Klicken zum Wechseln">
+          ${befOk ? '✓ ok' : '⚠ lose'}
+        </button>
+      </td>
+      <td><input type="date"   value="${esc(d.ablesung)}"                            onchange="hkvRows[${i}].ablesung=this.value" /></td>
+      <td><input type="text"   value="${esc(d.anm)}"     placeholder="–"            onchange="hkvRows[${i}].anm=this.value" /></td>
+      <td><button class="del-row" onclick="removeHKV(${d.id})">×</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STROM
+═══════════════════════════════════════════════════════════ */
+function addStrom() {
+  stromRows.push({ id: uid(), raum:'', nr:'', stand:'', ablesung:'', anm:'' });
+  renderStrom();
+}
+function removeStrom(id) { stromRows = stromRows.filter(r => r.id !== id); renderStrom(); }
+function renderStrom() {
+  const tbody = document.getElementById('stromBody');
+  if (!stromRows.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Noch keine Einträge – über die Schaltfläche unten hinzufügen.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = stromRows.map((d, i) => `
+    <tr>
+      <td style="color:var(--light);font-size:11px;font-weight:700;">${i+1}.</td>
+      <td><input type="text"   value="${esc(d.raum)}"  placeholder="Raum"          onchange="stromRows[${i}].raum=this.value" /></td>
+      <td><input type="text"   value="${esc(d.nr)}"    placeholder="z. B. 20650" style="font-family:monospace" onchange="stromRows[${i}].nr=this.value" /></td>
+      <td><input type="number" value="${esc(d.stand)}" placeholder="0"             onchange="stromRows[${i}].stand=this.value" /></td>
+      <td><input type="date"   value="${esc(d.ablesung)}"                           onchange="stromRows[${i}].ablesung=this.value" /></td>
+      <td><input type="text"   value="${esc(d.anm)}"   placeholder="–"             onchange="stromRows[${i}].anm=this.value" /></td>
+      <td><button class="del-row" onclick="removeStrom(${d.id})">×</button></td>
+    </tr>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCHLÜSSEL
+═══════════════════════════════════════════════════════════ */
+function addKey() {
+  keyRows.push({ id: uid(), nr:'', zweck:'', ma:'', ausgabe:'', rueckgabe:'', status:'' });
+  renderKeys();
+}
+function removeKey(id) { keyRows = keyRows.filter(r => r.id !== id); renderKeys(); updateProgress(); }
+function setKeyStatus(i, val) {
+  keyRows[i].status = keyRows[i].status === val ? '' : val;
+  renderKeys();
+  updateProgress();
+}
+function renderKeys() {
+  const tbody = document.getElementById('keyBody');
+  if (!keyRows.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">Noch keine Einträge – über die Schaltfläche unten hinzufügen.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = keyRows.map((d, i) => `
+    <tr>
+      <td style="color:var(--light);font-size:11px;font-weight:700;">${i+1}.</td>
+      <td><input type="text" value="${esc(d.nr)}"       placeholder="A9.4.01" style="font-family:monospace" onchange="keyRows[${i}].nr=this.value" /></td>
+      <td><input type="text" value="${esc(d.zweck)}"    placeholder="Briefkasten, Büro …" onchange="keyRows[${i}].zweck=this.value" /></td>
+      <td><input type="text" value="${esc(d.ma)}"       placeholder="Name"      onchange="keyRows[${i}].ma=this.value" /></td>
+      <td><input type="date" value="${esc(d.ausgabe)}"                           onchange="keyRows[${i}].ausgabe=this.value" /></td>
+      <td><input type="date" value="${esc(d.rueckgabe)}"                         onchange="keyRows[${i}].rueckgabe=this.value;updateProgress();" /></td>
+      <td style="white-space:nowrap;">
+        <button class="bef-btn ${d.status==='zurück'?'is-ok':''}"
+          onclick="setKeyStatus(${i},'zurück')">✓ Zurück</button>
+      </td>
+      <td style="white-space:nowrap;">
+        <button class="bef-btn ${d.status==='verlust'?'is-lose':''}"
+          onclick="setKeyStatus(${i},'verlust')">✕ Verlust</button>
+      </td>
+      <td><button class="del-row" onclick="removeKey(${d.id})">×</button></td>
+    </tr>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCHLIESS­ZYLINDER
+═══════════════════════════════════════════════════════════ */
+function addZylinder() {
+  zylinderRows.push({ id: uid(), raum:'', nr:'', typ:'', anzahl:'', zustand:'ok', anm:'' });
+  renderZylinder();
+}
+function removeZylinder(id) { zylinderRows = zylinderRows.filter(r => r.id !== id); renderZylinder(); }
+function toggleZustand(i) {
+  const states = ['ok', 'beschädigt', 'fehlend'];
+  const cur = states.indexOf(zylinderRows[i].zustand);
+  zylinderRows[i].zustand = states[(cur + 1) % states.length];
+  renderZylinder();
+}
+function renderZylinder() {
+  const tbody = document.getElementById('zylinderBody');
+  if (!zylinderRows.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">Noch keine Einträge – über die Schaltfläche unten hinzufügen.</td></tr>`;
+    return;
+  }
+  const zustandClass = { 'ok': 'is-ok', 'beschädigt': 'is-lose', 'fehlend': 'is-lose' };
+  const zustandIcon  = { 'ok': '✓', 'beschädigt': '⚠', 'fehlend': '✕' };
+  tbody.innerHTML = zylinderRows.map((d, i) => `
+    <tr>
+      <td style="color:var(--light);font-size:11px;font-weight:700;">${i+1}.</td>
+      <td><input type="text" value="${esc(d.raum)}"   placeholder="z. B. C441"           onchange="zylinderRows[${i}].raum=this.value" /></td>
+      <td><input type="text" value="${esc(d.nr)}"     placeholder="Zyl.-Nr."  style="font-family:monospace" onchange="zylinderRows[${i}].nr=this.value" /></td>
+      <td><input type="text" value="${esc(d.typ)}"    placeholder="Hersteller / Profil"   onchange="zylinderRows[${i}].typ=this.value" /></td>
+      <td style="text-align:center;"><input type="number" value="${esc(d.anzahl)}" placeholder="0" min="0" style="width:60px;text-align:center;" onchange="zylinderRows[${i}].anzahl=this.value" /></td>
+      <td style="text-align:center;">
+        <button class="bef-btn ${zustandClass[d.zustand]}" onclick="toggleZustand(${i})" title="Klicken zum Wechseln">
+          ${zustandIcon[d.zustand]} ${d.zustand}
+        </button>
+      </td>
+      <td><input type="text" value="${esc(d.anm)}"    placeholder="–"                     onchange="zylinderRows[${i}].anm=this.value" /></td>
+      <td><button class="del-row" onclick="removeZylinder(${d.id})">×</button></td>
+    </tr>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PROGRESS
+   Vollständig wenn:
+   - Datum gesetzt
+   - Mieter eingetragen
+   - Alle Raumname vergeben
+   - Alle Checklisten-Felder ausgefüllt (ok/nok/na)
+   - Alle HKV: Stand + Ablesedatum eingetragen
+   - Alle Stromzähler: Stand + Ablesedatum eingetragen
+   - Alle Schlüssel: Status gesetzt (zurück oder verlust)
+═══════════════════════════════════════════════════════════ */
+function updateProgress() {
+  const checks_list = [];
+
+  // 1. Stammdaten
+  checks_list.push(!!document.getElementById('datum').value);
+  checks_list.push(!!document.getElementById('mieter').value.trim());
+
+  // 2. Alle Räume haben einen Namen
+  rooms.forEach(r => checks_list.push(!!r.name.trim()));
+
+  // 3. Checkliste: alle Felder sind gesetzt (ok/nok/na – immer gesetzt, also immer true)
+  //    Kein Handlungsbedarf, da Defaultwert 'ok' immer gesetzt ist.
+
+  // 4. HKV: Stand und Ablesedatum ausgefüllt
+  hkvRows.forEach(d => {
+    checks_list.push(String(d.stand).trim() !== '');
+    checks_list.push(!!d.ablesung);
+  });
+
+  // 5. Strom: Stand und Ablesedatum ausgefüllt
+  stromRows.forEach(d => {
+    checks_list.push(String(d.stand).trim() !== '');
+    checks_list.push(!!d.ablesung);
+  });
+
+  // 6. Schlüssel: jeder hat einen Status (zurück oder verlust)
+  keyRows.forEach(d => checks_list.push(d.status === 'zurück' || d.status === 'verlust'));
+
+  const total = checks_list.length;
+  const done  = checks_list.filter(Boolean).length;
+  const pct   = total > 0 ? Math.round(done / total * 100) : 0;
+
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('doneBanner').classList.toggle('show', total > 2 && done === total);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SIGNATURES
+═══════════════════════════════════════════════════════════ */
+function initPad(id) {
+  const cvs = document.getElementById(id);
+  const ctx = cvs.getContext('2d');
+  let drawing = false, lx = 0, ly = 0;
+  function resize() {
+    const r = cvs.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    cvs.width  = r.width  * dpr;
+    cvs.height = r.height * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  }
+  resize();
+  const pos = e => { const r = cvs.getBoundingClientRect(), s = e.touches ? e.touches[0] : e; return { x: s.clientX - r.left, y: s.clientY - r.top }; };
+  cvs.addEventListener('mousedown',  e => { e.preventDefault(); drawing = true; const p = pos(e); lx = p.x; ly = p.y; });
+  cvs.addEventListener('mousemove',  e => { if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(p.x, p.y); ctx.stroke(); lx = p.x; ly = p.y; });
+  cvs.addEventListener('mouseup',    () => { drawing = false; });
+  cvs.addEventListener('mouseleave', () => { drawing = false; });
+  cvs.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = pos(e); lx = p.x; ly = p.y; }, { passive: false });
+  cvs.addEventListener('touchmove',  e => { if (!drawing) return; e.preventDefault(); const p = pos(e); ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(p.x, p.y); ctx.stroke(); lx = p.x; ly = p.y; }, { passive: false });
+  cvs.addEventListener('touchend',   () => { drawing = false; });
+}
+function clearSig(id) {
+  const c = document.getElementById(id);
+  c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MISC
+═══════════════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+function updateTitle() {
+  const typ = document.getElementById('protokolltyp').value;
+  document.getElementById('hdrDocTitle').textContent = typ;
+  // Schlüssel-Abschnitt dynamisch benennen
+  const keyTitle = document.getElementById('keySecTitle');
+  if (keyTitle) keyTitle.textContent = typ === 'Übergabe-Protokoll' ? 'Schlüssel-Übergabe' : 'Schlüssel-Rückgabe';
+}
+function markEmptyDateFields() {
+  // Markiert leere Datumsfelder, damit der Platzhalter (tt.mm.jjjj) im Druck ausgeblendet wird,
+  // OHNE appearance:none zu verwenden (das würde in Safari auch ausgefüllte Werte beim Drucken verstecken).
+  document.querySelectorAll('input[type="date"]').forEach(inp => {
+    inp.classList.toggle('print-empty', !inp.value);
+  });
+}
+function syncInputValuesForPrint() {
+  // Safari übernimmt beim Drucken teils nicht den live getippten Wert dynamisch erzeugter
+  // Felder, sondern das ursprüngliche HTML-value-Attribut. Deshalb hier vor dem Druck bei
+  // allen Text-/Nummer-Feldern das Attribut explizit auf den aktuellen Wert setzen
+  // (betrifft u. a. Raumnamen, HKV/Strom/Schlüssel/Zylinder-Zeilen).
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(inp => {
+    inp.setAttribute('value', inp.value);
+  });
+  // Auch das noch fokussierte Feld verlassen, damit iOS Safari den zuletzt getippten
+  // Wert sicher committet, bevor der Druckdialog öffnet.
+  if (document.activeElement && typeof document.activeElement.blur === 'function') {
+    document.activeElement.blur();
+  }
+}
+window.addEventListener('beforeprint', markEmptyDateFields);
+window.addEventListener('beforeprint', syncInputValuesForPrint);
+
+function savePDF() {
+  if (window.self !== window.top) {
+    alert('Bitte die Datei direkt in Safari öffnen (nicht in der App-Vorschau), um das PDF zu speichern.');
+    return;
+  }
+  markEmptyDateFields();
+  window.print();
+}
+function resetForm() { if (confirm('Alle Eingaben zurücksetzen?')) location.reload(); }
+function openEmailModal() {
+  const m = document.getElementById('mieter').value || 'Mieter';
+  const d = document.getElementById('datum').value || '';
+  const t = document.getElementById('protokolltyp').value;
+  document.getElementById('emailSubject').value = `${t} ${d} – ${m} – MAFINEX`;
+  document.getElementById('emailModal').classList.add('open');
+}
+function closeEmailModal() { document.getElementById('emailModal').classList.remove('open'); }
+function sendEmail() {
+  const to = encodeURIComponent(document.getElementById('emailTo').value);
+  const cc = encodeURIComponent(document.getElementById('emailCC').value);
+  const s  = encodeURIComponent(document.getElementById('emailSubject').value);
+  const b  = encodeURIComponent(document.getElementById('emailBody').value);
+  closeEmailModal();
+  // Schritt 1: PDF-Druckdialog öffnen
+  markEmptyDateFields();
+  window.print();
+  // Schritt 2: nach dem Druckdialog E-Mail-Client öffnen
+  // (setTimeout gibt dem Druckdialog Zeit zum Öffnen/Schließen)
+  setTimeout(() => {
+    window.location.href = `mailto:${to}?cc=${cc}&subject=${s}&body=${b}`;
+  }, 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('datum').value = new Date().toISOString().slice(0, 10);
+
+  // Start with one empty room
+  addRoom();
+
+  // Empty tables
+  renderHKV();
+  renderStrom();
+  renderKeys();
+  renderZylinder();
+
+  // iPad-Hinweis anzeigen wenn in eingebettetem Frame
+  if (window.self !== window.top) {
+    const hint = document.getElementById('ipadHint');
+    if (hint) hint.style.display = 'block';
+  }
+
+  // Titel sync beim Start
+  updateTitle();
+
+  // Signature pads
+  initPad('sigMieter');
+  initPad('sigVermieter');
+
+  // Sync mieter name → signature label removed (field is now directly editable)
+
+  updateProgress();
+});
+</script>
+</body>
+</html>
